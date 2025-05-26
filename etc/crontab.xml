@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="janis">
+        <job instance="JanisCommerce\JanisConnector\Cron\OrdersToJanisSender" method="execute" name="orders_to_janis_sender">
+            <config_path>janis_connection_section/janis_orders_group/orders_cron_job_sync_schedule</config_path>
+        </job>
+    </group>
+</config>

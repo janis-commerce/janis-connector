@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+	<system>
+		<tab id="janis" translate="label" sortOrder="999">
+			<label>Janis Commerce</label>
+		</tab>
+		<section id="janis_connection_section" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+			<label>Configuration</label>
+			<tab>janis</tab>
+			<resource>JanisCommerce_JanisConnector::config_JanisCommerce_JanisConnector</resource>
+			<group id="janis_connection_group" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+				<label>Configuration</label>
+
+                <field id="api_test_mode" type="select" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Test Mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+
+                <field id="api_client" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>API Client</label>
+				</field>
+				<field id="api_key" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>API Key</label>
+				</field>
+				<field id="api_secret" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>API Secret</label>
+				</field>
+                <field id="api_url" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>API URL</label>
+                </field>
+
+                <field id="api_client_test_mode" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>API Client (Test Mode)</label>
+                </field>
+                <field id="api_key_test_mode" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>API Key (Test Mode)</label>
+                </field>
+                <field id="api_secret_test_mode" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>API Secret (Test Mode)</label>
+                </field>
+                <field id="api_url_test_mode" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>API URL (Test Mode)</label>
+                    <comment>No need to add the protocol ex. janisqa.in/api</comment>
+                </field>
+			</group>
+
+            <group id="janis_orders_group" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                <label>Orders</label>
+
+                <field id="orders_cron_job_sync_schedule" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Orders CRON job sync schedule with Janis</label>
+                    <comment>Please use a valid format for a CRON job execution</comment>
+                </field>
+
+                <field id="janis_account_name" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Janis account name</label>
+                </field>
+
+                <field id="janis_endpoint_create_order" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Janis endpoint to notify order</label>
+                    <comment>Janis endpoint to receive new invoice order creation notifications</comment>
+                </field>
+
+                <field id="janis_endpoint_splitcart" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Janis endpoint to receive a split cart</label>
+                    <comment>Janis endpoint to send magento cart and receive splitted carts</comment>
+                </field>
+
+                <field id="janis_sales_channel_id" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Janis endpoint Sales Channel ID</label>
+                </field>
+            </group>
+		</section>
+	</system>
+</config>
