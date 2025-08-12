@@ -1,4 +1,5 @@
-# Janis Connector     [![Version Status](https://img.shields.io/badge/version-104.0.0.4-brightgreen.svg)]()
+# Janis Connector [![Packagist Version](https://img.shields.io/packagist/v/janis-commerce/janis-connector.svg?style=flat-square)](https://packagist.org/packages/janis-commerce/janis-connector)
+
 
 The purpose of this module is to create a connection to Janis Commerce API services. By doing this some information will be available in Magento 2 to be used.
 
@@ -41,6 +42,9 @@ Once JanisConnector was installed, you need to enable the module. To do this, ru
     bin/magento module:enable JanisCommerce_JanisConnector
 
     bin/magento setup:upgrade
+
+    # This is used to start the exclusive Janis Commerce crons.
+    bin/magento cron:run --group=janis
 
 ```
 
