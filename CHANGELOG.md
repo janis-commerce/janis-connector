@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-09-28
+### Added
+- Added `LogViewer` in system configuration to display logs
+- Added Ajax controller for log handling in admin
+- Added new configuration sources: `Environment` and `OrderStatusByState`
+- Improved field and view configuration in the system
+- Added new settings `is_order_created_notified` and `is_order_invoice_notified`, also added as filters in the orders listing
+
+### Changed
+- Improved `OrdersToJanisSender` cron with additional functionalities
+- Updated `JanisOrderService` with improvements in order handling
+- Improved system configuration (system.xml) with new fields and better organization
+- Updated general configuration (config.xml) with new parameters
+- Improved UI component sales_order_grid.xml
+
+### Removed
+- Removed unnecessary frontend layout and template files `janis_error_index.xml`, `index.phtml`
+- Removed `is_sync_with_janis` column configuration
+
 ## [1.0.0] - 2025-05-05
 ### Added
 - Project inited
