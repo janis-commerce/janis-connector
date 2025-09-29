@@ -52,33 +52,45 @@ class JanisOrderService extends JanisConnector
     }
 
     /**
-     * @param $saleOrder
-     * @return array|bool|float|int|mixed|string|null
+     * Send order notification to Janis and update the corresponding notification flag
+     *
+     * @param \Magento\Sales\Model\Order $saleOrder The order to send notification for
+     * @param string $notificationType The type of notification being sent. Possible values:
+     *   - "is_order_created_notified": Sets is_order_created_notified field to 1
+     *   - "is_order_invoice_notified": Sets is_order_invoice_notified field to 1
+     * @return array|bool|float|int|mixed|string|null Response from Janis API
      */
-    public function sendOrderCreationNotification($saleOrder)
+    public function sendOrderNotification($saleOrder, $notificationType)
     {
         $this->orderNotification->setObj($saleOrder);
 
+        $notificationTypeString = $notificationType === 'is_order_created_notified' ? 'created' : 'invoiced';
+
         // Getting create order payload
-        $payload = $this->orderNotification->builtPayload(true);
+        $payload = $this->orderNotification->builtOrderNotificationPayload(true);
 
         $this->JanisConnectorLogger->info('*************** Order Notification ***************');
-        $this->JanisConnectorLogger->info('Order id: ' . $saleOrder->getId() .' sended.');
+        $this->JanisConnectorLogger->info('Start sending notification type: ' . $notificationTypeString . ' order id: ' . $saleOrder->getId());
 
-        $response = $this->post(
-            $this->helper->getJanisEndpointToNotifyNewOrder(),
-            $payload
-        );
+        $response = $this->post($this->helper->getJanisEndpointToNotifyOrder(), $payload);
 
         // Saving order comment
         if ( isset($response['SendMessageResponse']['ResponseMetadata']['RequestId']) )
         {
             $this->orderCommentManager->saveComment($saleOrder, print_r($response['SendMessageResponse']['ResponseMetadata']['RequestId'], true));
+            $this->JanisConnectorLogger->info('Notification type: ' . $notificationTypeString . ' order id: ' . $saleOrder->getId() .' sended.');
         } else {
             $this->orderCommentManager->saveComment($saleOrder, print_r($response, true));
+            $this->JanisConnectorLogger->info('Notification type: ' . $notificationTypeString . ' order id: ' . $saleOrder->getId() .' not sended.');
         }
 
-        $saleOrder->setIsSyncWithJanis(1);
+        // Set the appropriate notification flag based on notification type
+        if ($notificationType === 'is_order_created_notified') {
+            $saleOrder->setOrderCreatedNotificated(1);
+        } elseif ($notificationType === 'is_order_invoice_notified') {
+            $saleOrder->setOrderInvoiceNotified(1);
+        }
+
         $saleOrder->save();
 
         return $response;

@@ -14,23 +14,17 @@ class Data extends AbstractHelper
     const DEFAULT_LATITUDE = 0;
     const DEFAULT_LONGITUDE = 0;
 
-    const API_TEST_MODE_ENABLE = "janis_connection_section/janis_connection_group/api_test_mode";
-
-    const API_CLIENT = "janis_connection_section/janis_connection_group/api_client";
-    const API_KEY = "janis_connection_section/janis_connection_group/api_key";
-    const API_SECRET = "janis_connection_section/janis_connection_group/api_secret";
-    const API_URL = "janis_connection_section/janis_connection_group/api_url";
-
-    const API_CLIENT_TEST_MODE = "janis_connection_section/janis_connection_group/api_client_test_mode";
-    const API_KEY_TEST_MODE = "janis_connection_section/janis_connection_group/api_key_test_mode";
-    const API_SECRET_TEST_MODE = "janis_connection_section/janis_connection_group/api_secret_test_mode";
-    const API_URL_TEST_MODE = "janis_connection_section/janis_connection_group/api_url_test_mode";
-
-    const JANIS_ACCOUNT_NAME = "janis_connection_section/janis_orders_group/janis_account_name";
-    const JANIS_ENDPOINT_TO_NOTIFY_NEW_ORDER = "janis_connection_section/janis_orders_group/janis_endpoint_create_order";
-    const JANIS_ENDPOINT_TO_SPLIT_CARTS = "janis_connection_section/janis_orders_group/janis_endpoint_splitcart";
+    const API_ENVIRONMENT = "janis_connection_section/janis_connection_group/api_environment";
+    const JANIS_CLIENT = "janis_connection_section/janis_connection_group/janis_client";
+    const JANIS_API_KEY = "janis_connection_section/janis_connection_group/janis_api_key";
+    const JANIS_API_SECRET = "janis_connection_section/janis_connection_group/janis_api_secret";
 
     const JANIS_SALES_CHANNEL_ID = "janis_connection_section/janis_orders_group/janis_sales_channel_id";
+
+    const JANIS_ACCOUNT_NAME = "janis_connection_section/janis_orders_group/janis_account_name";
+    const NOTIFY_INVOICE = "janis_connection_section/janis_orders_group/notify_invoice";
+    const ORDER_CREATED_STATUS = "janis_connection_section/janis_orders_group/order_created_status";
+    const ORDER_INVOICED_STATUS = "janis_connection_section/janis_orders_group/order_invoiced_status";
 
     /**
      * @var \Magento\Checkout\Model\Session
@@ -51,123 +45,62 @@ class Data extends AbstractHelper
         $this->checkoutSession = $checkoutSession;
     }
 
-
     /**
-     * Retrieves a TRUE when Test Mode was enabled, and FALSE when Production Mode was enabled
-     *
-     * @return bool
-     */
-    public function getApiTestModeEnable()
-    {
-        return (bool)$this->scopeConfig->getValue(
-            self::API_TEST_MODE_ENABLE,
-            ScopeInterface::SCOPE_STORE
-        );
-    }
-
-    /**
-     * Retrieves a setup Janis Api Client to be able to connect on Production Mode
+     * Retrieves the selected environment
      *
      * @return string
      */
-    public function getApiClient()
+    public function getEnvironment()
     {
         return $this->scopeConfig->getValue(
-            self::API_CLIENT,
+            self::API_ENVIRONMENT,
             ScopeInterface::SCOPE_STORE
         );
     }
 
     /**
-     * Retrieves a setup Janis Api Client to be able to connect on Test Mode
+     * Retrieves a setup Janis Api Client
      *
      * @return string
      */
-    public function getApiClientTestMode()
+    public function getJanisClient()
     {
         return $this->scopeConfig->getValue(
-            self::API_CLIENT_TEST_MODE,
+            self::JANIS_CLIENT,
             ScopeInterface::SCOPE_STORE
         );
     }
 
+
     /**
-     * Retrieves a setup Janis Api Key to be able to connect on Production Mode
+     * Retrieves a setup Janis Api Key
      *
      * @return string
      */
-    public function getApiKey()
+    public function getJanisApiKey()
     {
         return $this->scopeConfig->getValue(
-            self::API_KEY,
+            self::JANIS_API_KEY,
             ScopeInterface::SCOPE_STORE
         );
     }
 
+
     /**
-     * Retrieves a setup Janis Api Key to be able to connect on Test Mode
+     * Retrieves a setup Janis Secret Key
      *
      * @return string
      */
-    public function getApiKeyTestMode()
+    public function getJanisApiSecret()
     {
         return $this->scopeConfig->getValue(
-            self::API_KEY_TEST_MODE,
+            self::JANIS_API_SECRET,
             ScopeInterface::SCOPE_STORE
         );
     }
 
-    /**
-     * Retrieves a setup Janis Secret Key to be able to connect on Production Mode
-     *
-     * @return string
-     */
-    public function getApiSecret()
-    {
-        return $this->scopeConfig->getValue(
-            self::API_SECRET,
-            ScopeInterface::SCOPE_STORE
-        );
-    }
 
-    /**
-     * Retrieves a setup Janis Secret Key to be able to connect on Test Mode
-     *
-     * @return string
-     */
-    public function getApiSecretTestMode()
-    {
-        return $this->scopeConfig->getValue(
-            self::API_SECRET_TEST_MODE,
-            ScopeInterface::SCOPE_STORE
-        );
-    }
 
-    /**
-     * Retrieves a setup Janis url to be able to connect on Production Mode
-     *
-     * @return string
-     */
-    public function getApiUrl()
-    {
-        return $this->scopeConfig->getValue(
-            self::API_URL,
-            ScopeInterface::SCOPE_STORE
-        );
-    }
-
-    /**
-     * Retrieves a setup Janis url to be able to connect on Test Mode
-     *
-     * @return string
-     */
-    public function getApiUrlTestMode()
-    {
-        return $this->scopeConfig->getValue(
-            self::API_URL_TEST_MODE,
-            ScopeInterface::SCOPE_STORE
-        );
-    }
 
     /**
      * Retrieves a setup Janis user name account
@@ -183,29 +116,45 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Retrieves a setup url to target to a Janis EP to sent notifications when a new order with invoice was created
+     * Retrieves the Janis endpoint URL for order notifications based on environment
      *
      * @return string
      */
-    public function getJanisEndpointToNotifyNewOrder()
+    public function getJanisEndpointToNotifyOrder()
     {
-        return $this->scopeConfig->getValue(
-            self::JANIS_ENDPOINT_TO_NOTIFY_NEW_ORDER,
-            ScopeInterface::SCOPE_STORE
-        );
+        $environment = $this->getEnvironment();
+
+        switch ($environment) {
+            case 'production':
+                return 'https://magento.oms.janis.in/api/order-status-change-hook';
+            case 'qa':
+                return 'https://magento.oms.janisqa.in/api/order-status-change-hook';
+            case 'beta':
+                return 'https://magento.oms.janisdev.in/api/order-status-change-hook';
+            default:
+                return 'https://magento.oms.janis.in/api/order-status-change-hook'; // Default to production
+        }
     }
 
     /**
-     * Retrieves a setup url to target to a Janis EP to splitcarts order
+     * Retrieves the Janis endpoint URL for split carts based on environment
      *
      * @return string
      */
     public function getJanisEndpointToSplitCarts()
     {
-        return $this->scopeConfig->getValue(
-            self::JANIS_ENDPOINT_TO_SPLIT_CARTS,
-            ScopeInterface::SCOPE_STORE
-        );
+        $environment = $this->getEnvironment();
+
+        switch ($environment) {
+            case 'production':
+                return 'https://public.delivery.janis.in/api/simulate-by-shipping-type';
+            case 'qa':
+                return 'https://public.delivery.janisqa.in/api/simulate-by-shipping-type';
+            case 'beta':
+                return 'https://public.delivery.janisdev.in/api/simulate-by-shipping-type';
+            default:
+                return 'https://public.delivery.janis.in/api/simulate-by-shipping-type'; // Default to production
+        }
     }
 
     /**
@@ -219,16 +168,6 @@ class Data extends AbstractHelper
             self::JANIS_SALES_CHANNEL_ID,
             ScopeInterface::SCOPE_STORE
         );
-    }
-
-    /**
-     * Return a janis string custom code to be used as key when splitcart by janis is activated
-     *
-     * @return string janis splitcart custom code
-     */
-    public function getJanisCode()
-    {
-        return self::JANIS_ATTR_CODE;
     }
 
     /**
@@ -318,5 +257,57 @@ class Data extends AbstractHelper
     {
         $longitude = $this->checkoutSession->getCustomerLongitude();
         return ($longitude) ?: (self::DEFAULT_LONGITUDE);
+    }
+
+    // /**
+    //  * Retrieves the order import timing setting
+    //  *
+    //  * @return string
+    //  */
+    // public function getOrderImportTiming()
+    // {
+    //     return $this->scopeConfig->getValue(
+    //         self::ORDER_IMPORT_TIMING,
+    //         ScopeInterface::SCOPE_STORE
+    //     );
+    // }
+
+    /**
+     * Retrieves the order created status setting
+     *
+     * @return string
+     */
+    public function getOrderCreatedStatus()
+    {
+        return $this->scopeConfig->getValue(
+            self::ORDER_CREATED_STATUS,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Retrieves the order invoiced status setting
+     *
+     * @return string
+     */
+    public function getOrderInvoicedStatus()
+    {
+        return $this->scopeConfig->getValue(
+            self::ORDER_INVOICED_STATUS,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Retrieves the invoice notification enabled setting
+     *
+     * @return bool
+     */
+    public function isInvoiceNotificationEnabled()
+    {
+        return (bool)$this->scopeConfig->getValue(
+            self::NOTIFY_INVOICE,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 }

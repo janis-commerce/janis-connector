@@ -11,7 +11,7 @@ abstract class AbstractAttributeMapper
     const IS_BOOLEAN = 3;
 
 
-    abstract public function builtPayload($jsonEncoded = false);
+    abstract public function builtOrderNotificationPayload($jsonEncoded = false);
 
     /**
      * Set a current object to be used as default

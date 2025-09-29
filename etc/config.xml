@@ -2,28 +2,24 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <janis_connection_section>
-            <janis_connection_group>
-                <api_test_mode/>
-
-                <api_client/>
-                <api_key/>
-                <api_secret/>
-                <api_url/>
-
-                <api_client_test_mode/>
-                <api_key_test_mode/>
-                <api_secret_test_mode/>
-                <api_url_test_mode>janisqa.in/api</api_url_test_mode>
-
-            </janis_connection_group>
 
             <janis_orders_group>
-                <orders_cron_job_sync_schedule>0 * * * *</orders_cron_job_sync_schedule>
                 <janis_account_name></janis_account_name>
-                <janis_endpoint_create_order>https://magento.oms.janisqa.in/api/order-status-change-hook</janis_endpoint_create_order>
-                <janis_endpoint_splitcart>https://public.delivery.janisqa.in/api/simulate-by-shipping-type</janis_endpoint_splitcart>
-                <janis_sales_channel_id></janis_sales_channel_id>
+                <order_created_status></order_created_status>
+                <notify_invoice>0</notify_invoice>
+                <order_invoiced_status></order_invoiced_status>
             </janis_orders_group>
+
+            <janis_simulate_group>
+                <janis_sales_channel_id></janis_sales_channel_id>
+            </janis_simulate_group>
+
+            <janis_credentials_group>
+                <api_environment>production</api_environment>
+                <janis_client/>
+                <janis_api_key/>
+                <janis_api_secret/>
+            </janis_credentials_group>
         </janis_connection_section>
     </default>
 </config>

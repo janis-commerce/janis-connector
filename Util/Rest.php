@@ -53,20 +53,10 @@ class Rest extends Api
     )
     {
         $userData = [
-            'janis-client' => $this->helperData->getApiClient(),
-            'janis-api-key' => $this->helperData->getApiKey(),
-            'janis-api-secret' => $this->helperData->getApiSecret()
+            'janis-client' => $this->helperData->getJanisClient(),
+            'janis-api-key' => $this->helperData->getJanisApiKey(),
+            'janis-api-secret' => $this->helperData->getJanisApiSecret()
         ];
-
-        // If Test mode was enabled
-        if ($this->helperData->getApiClientTestMode())
-        {
-            $userData = [
-                'janis-client' => $this->helperData->getApiClientTestMode(),
-                'janis-api-key' => $this->helperData->getApiKeyTestMode(),
-                'janis-api-secret' => $this->helperData->getApiSecretTestMode()
-            ];
-        }
 
         $this->curl->setHeaders($userData);
         $this->curl->addHeader("Content-Type", "application/json");

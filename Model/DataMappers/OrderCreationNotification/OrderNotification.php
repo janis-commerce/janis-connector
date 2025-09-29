@@ -30,7 +30,7 @@ class OrderNotification extends AbstractAttributeMapper
      * @param boolean $jsonEncoded
      * @return array|false|string
      */
-    public function builtPayload($jsonEncoded = false)
+    public function builtOrderNotificationPayload($jsonEncoded = false)
     {
         $payload = [];
 

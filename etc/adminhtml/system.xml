@@ -4,72 +4,83 @@
 		<tab id="janis" translate="label" sortOrder="999">
 			<label>Janis Commerce</label>
 		</tab>
-		<section id="janis_connection_section" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+		<section id="janis_configuration_section" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
 			<label>Configuration</label>
 			<tab>janis</tab>
 			<resource>JanisCommerce_JanisConnector::config_JanisCommerce_JanisConnector</resource>
-			<group id="janis_connection_group" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-				<label>Configuration</label>
-
-                <field id="api_test_mode" type="select" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-                    <label>Test Mode</label>
-                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
-                </field>
-
-                <field id="api_client" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-					<label>API Client</label>
-				</field>
-				<field id="api_key" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-					<label>API Key</label>
-				</field>
-				<field id="api_secret" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-					<label>API Secret</label>
-				</field>
-                <field id="api_url" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-                    <label>API URL</label>
-                </field>
-
-                <field id="api_client_test_mode" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-                    <label>API Client (Test Mode)</label>
-                </field>
-                <field id="api_key_test_mode" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-                    <label>API Key (Test Mode)</label>
-                </field>
-                <field id="api_secret_test_mode" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-                    <label>API Secret (Test Mode)</label>
-                </field>
-                <field id="api_url_test_mode" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-                    <label>API URL (Test Mode)</label>
-                    <comment>No need to add the protocol ex. janisqa.in/api</comment>
-                </field>
-			</group>
 
             <group id="janis_orders_group" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
                 <label>Orders</label>
-
-                <field id="orders_cron_job_sync_schedule" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-                    <label>Orders CRON job sync schedule with Janis</label>
-                    <comment>Please use a valid format for a CRON job execution</comment>
-                </field>
 
                 <field id="janis_account_name" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
                     <label>Janis account name</label>
                 </field>
 
-                <field id="janis_endpoint_create_order" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-                    <label>Janis endpoint to notify order</label>
-                    <comment>Janis endpoint to receive new invoice order creation notifications</comment>
+                <!-- Status para pedidos recién creados -->
+                <field id="order_created_status" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Order Created Status</label>
+                    <source_model>JanisCommerce\JanisConnector\Model\Config\Source\OrderStatusByState</source_model>
                 </field>
 
-                <field id="janis_endpoint_splitcart" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
-                    <label>Janis endpoint to receive a split cart</label>
-                    <comment>Janis endpoint to send magento cart and receive splitted carts</comment>
+                <field id="notify_invoice" type="select" sortOrder="61" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Enable Invoice Notification</label>
+                    <comment>Notify Janis when order is invoiced</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
 
-                <field id="janis_sales_channel_id" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                <!-- Status para pedidos facturados -->
+                <field id="order_invoiced_status" translate="label" type="select" sortOrder="62" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Order Invoiced Status</label>
+                    <source_model>JanisCommerce\JanisConnector\Model\Config\Source\OrderStatusByState</source_model>
+                    <depends>
+                        <field id="notify_invoice">1</field>
+                    </depends>
+                </field>
+
+            </group>
+
+            <group id="janis_simulate_group" sortOrder="20" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                <label>Simulate</label>
+
+                <field id="janis_sales_channel_id" type="text" sortOrder="20" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
                     <label>Janis endpoint Sales Channel ID</label>
                 </field>
             </group>
+
+            <group id="janis_credentials_group" sortOrder="30" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+				<label>Credentials</label>
+
+                <field id="api_environment" type="select" sortOrder="30" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Environment</label>
+                    <source_model>JanisCommerce\JanisConnector\Model\Config\Source\Environment</source_model>
+                </field>
+
+                <field id="janis_client" type="text" sortOrder="30" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>Janis Client</label>
+				</field>
+				<field id="janis_api_key" type="text" sortOrder="30" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>Janis API Key</label>
+				</field>
+				<field id="janis_api_secret" type="password" sortOrder="30" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>Janis API Secret</label>
+				</field>
+			</group>
 		</section>
+
+        <!-- sección nueva para Logs -->
+        <section id="janis_logs_section" sortOrder="20" showInWebsite="0" showInStore="0" showInDefault="1" translate="label">
+            <label>Logs</label>
+            <tab>janis</tab>
+            <resource>JanisCommerce_JanisConnector::config_JanisCommerce_JanisConnector</resource>
+
+            <group id="janis_logs_group" sortOrder="10" showInDefault="1">
+                <label>Logs</label>
+
+                <field id="log_viewer" translate="label" sortOrder="10" showInDefault="1" type="text">
+                    <comment>Showing latest entries from /var/log/janis_connector.log</comment>
+                    <frontend_model>JanisCommerce\JanisConnector\Block\Adminhtml\System\Config\LogViewer</frontend_model>
+                </field>
+            </group>
+        </section>
 	</system>
 </config>

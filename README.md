@@ -71,26 +71,17 @@ Here you can see 2 main sections:
 ### Janis Connection
 All this information must be requested to Janis Commerce and it will be provided depending of the client.
 
-- Test Mode: Allows you to activate and deactivate the Testing Mode environment, which uses the following credentials, to connect to API services.
+- Enviroment: Determina con que ambiente de janis se va a conectar el plugin Produccion o QA.
 
-- CREDENTIALS FOR PRODUCTION ENVIRONMENT: When Test Mode is DISABLED, this credentials must be setup.
-    - API Client: Janis Client code. Api Key Security Scheme Type.
-    - API Key: Client data Key. Api Key Security Scheme Type.
-    - API Secret: API secret data. Api Key Security Scheme Type.
-    - API URL: Production Mode URL to target Janis Order Management System (OMS)(1.8.0).
-
-- CREDENTIAL FOR TESTING ENVIRONMENT: When Test Mode is ENABLED, this credentials must be setup.
-    - API Client [Test mode]: Janis Client code. Api Key Security Scheme Type.
-    - API Key [Test mode]: Client data Key. Api Key Security Scheme Type.
-    - API Secret [Test mode]: API secret data. Api Key Security Scheme Type.
-    - API URL [Test mode]: Test Mode URL to target Janis Order Management System (OMS)(1.8.0).
+- CREDENTIALS FOR SELECTED ENVIRONMENT: When Test Mode is DISABLED, this credentials must be setup.
+    - Janis Client: Janis Client code. Api Key Security Scheme Type.
+    - Janis API Key: Client data Key. Api Key Security Scheme Type.
+    - Janis API Secret: API secret data. Api Key Security Scheme Type.
 
 ### Orders
 
 - Orders CRON job sync schedule with Janis: Configuration data that allows scheduling the periods in which the CRON process will run to send notifications to Janis.
 - Janis account name: Data for connection to API services.
-- Janis endpoint to notify order: URL for connection to Janis EndPoint, to which magento will send notifications of newly created orders.
-- Janis endpoint to receive a split cart: URL for connection to Janis EndPoint, which returns the information of the division of the carts.
 - Janis endpoint Sales Channel ID: Configuration data for the Sales Channel ID.
 
 # Features
