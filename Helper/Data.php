@@ -14,17 +14,17 @@ class Data extends AbstractHelper
     const DEFAULT_LATITUDE = 0;
     const DEFAULT_LONGITUDE = 0;
 
-    const API_ENVIRONMENT = "janis_connection_section/janis_connection_group/api_environment";
-    const JANIS_CLIENT = "janis_connection_section/janis_connection_group/janis_client";
-    const JANIS_API_KEY = "janis_connection_section/janis_connection_group/janis_api_key";
-    const JANIS_API_SECRET = "janis_connection_section/janis_connection_group/janis_api_secret";
+    const API_ENVIRONMENT = "janis_configuration_section/janis_credentials_group/api_environment";
+    const JANIS_CLIENT = "janis_configuration_section/janis_credentials_group/janis_client";
+    const JANIS_API_KEY = "janis_configuration_section/janis_credentials_group/janis_api_key";
+    const JANIS_API_SECRET = "janis_configuration_section/janis_credentials_group/janis_api_secret";
 
-    const JANIS_SALES_CHANNEL_ID = "janis_connection_section/janis_orders_group/janis_sales_channel_id";
+    const JANIS_SALES_CHANNEL_ID = "janis_configuration_section/janis_simulate_group/janis_sales_channel_id";
 
-    const JANIS_ACCOUNT_NAME = "janis_connection_section/janis_orders_group/janis_account_name";
-    const NOTIFY_INVOICE = "janis_connection_section/janis_orders_group/notify_invoice";
-    const ORDER_CREATED_STATUS = "janis_connection_section/janis_orders_group/order_created_status";
-    const ORDER_INVOICED_STATUS = "janis_connection_section/janis_orders_group/order_invoiced_status";
+    const JANIS_ACCOUNT_NAME = "janis_configuration_section/janis_orders_group/janis_account_name";
+    const NOTIFY_INVOICE = "janis_configuration_section/janis_orders_group/notify_invoice";
+    const ORDER_CREATED_STATUS = "janis_configuration_section/janis_orders_group/order_created_status";
+    const ORDER_INVOICED_STATUS = "janis_configuration_section/janis_orders_group/order_invoiced_status";
 
     /**
      * @var \Magento\Checkout\Model\Session
@@ -98,9 +98,6 @@ class Data extends AbstractHelper
             ScopeInterface::SCOPE_STORE
         );
     }
-
-
-
 
     /**
      * Retrieves a setup Janis user name account
@@ -258,19 +255,6 @@ class Data extends AbstractHelper
         $longitude = $this->checkoutSession->getCustomerLongitude();
         return ($longitude) ?: (self::DEFAULT_LONGITUDE);
     }
-
-    // /**
-    //  * Retrieves the order import timing setting
-    //  *
-    //  * @return string
-    //  */
-    // public function getOrderImportTiming()
-    // {
-    //     return $this->scopeConfig->getValue(
-    //         self::ORDER_IMPORT_TIMING,
-    //         ScopeInterface::SCOPE_STORE
-    //     );
-    // }
 
     /**
      * Retrieves the order created status setting

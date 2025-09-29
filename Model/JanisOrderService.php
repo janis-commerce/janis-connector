@@ -70,7 +70,7 @@ class JanisOrderService extends JanisConnector
         $payload = $this->orderNotification->builtOrderNotificationPayload(true);
 
         $this->JanisConnectorLogger->info('*************** Order Notification ***************');
-        $this->JanisConnectorLogger->info('Start sending notification type: ' . $notificationTypeString . ' order id: ' . $saleOrder->getId());
+        $this->JanisConnectorLogger->info('Start sending notification type: ' . $notificationTypeString . ' | OrderId: ' . $saleOrder->getId() . ' | IncrementId: ' . $saleOrder->getIncrementId());
 
         $response = $this->post($this->helper->getJanisEndpointToNotifyOrder(), $payload);
 
@@ -78,17 +78,17 @@ class JanisOrderService extends JanisConnector
         if ( isset($response['SendMessageResponse']['ResponseMetadata']['RequestId']) )
         {
             $this->orderCommentManager->saveComment($saleOrder, print_r($response['SendMessageResponse']['ResponseMetadata']['RequestId'], true));
-            $this->JanisConnectorLogger->info('Notification type: ' . $notificationTypeString . ' order id: ' . $saleOrder->getId() .' sended.');
+            $this->JanisConnectorLogger->info('Notification type: ' . $notificationTypeString . ' | OrderId: ' . $saleOrder->getId() . ' | IncrementId: ' . $saleOrder->getIncrementId() .' sended.');
         } else {
             $this->orderCommentManager->saveComment($saleOrder, print_r($response, true));
-            $this->JanisConnectorLogger->info('Notification type: ' . $notificationTypeString . ' order id: ' . $saleOrder->getId() .' not sended.');
+            $this->JanisConnectorLogger->info('Notification type: ' . $notificationTypeString . ' OrderId: ' . $saleOrder->getId() . ' | IncrementId: ' . $saleOrder->getIncrementId() .' not sended.');
         }
 
         // Set the appropriate notification flag based on notification type
         if ($notificationType === 'is_order_created_notified') {
-            $saleOrder->setOrderCreatedNotificated(1);
+            $saleOrder->setIsOrderCreatedNotified(1);
         } elseif ($notificationType === 'is_order_invoice_notified') {
-            $saleOrder->setOrderInvoiceNotified(1);
+            $saleOrder->setIsOrderInvoiceNotified(1);
         }
 
         $saleOrder->save();

@@ -3,11 +3,16 @@
 namespace JanisCommerce\JanisConnector\Cron;
 
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
+use JanisCommerce\JanisConnector\Logger\JanisConnectorLogger;
 use JanisCommerce\JanisConnector\Model\JanisOrderService;
 use JanisCommerce\JanisConnector\Helper\Data;
 
 class OrdersToJanisSender
 {
+    /**
+     * @var JanisConnectorLogger
+     */
+    private $JanisConnectorLogger;
     /**
      * @var CollectionFactory
      */
@@ -23,16 +28,19 @@ class OrdersToJanisSender
 
     /**
      * OrdersToJanisSender constructor.
+     * @param JanisConnectorLogger $JanisConnectorLogger
      * @param JanisOrderService $janisOrderService
      * @param CollectionFactory $orderCollectionFactory
      * @param Data $helper
      */
     public function __construct(
+        JanisConnectorLogger $JanisConnectorLogger,
         JanisOrderService $janisOrderService,
         CollectionFactory $orderCollectionFactory,
         Data $helper
     )
     {
+        $this->JanisConnectorLogger = $JanisConnectorLogger;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->janisOrderService = $janisOrderService;
         $this->helper = $helper;
@@ -40,7 +48,9 @@ class OrdersToJanisSender
 
     public function execute()
     {
-        /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $orders */
+
+        $this->JanisConnectorLogger->info('*************** OrdersToJanisSender cron job started ***************');
+
         $orders = $this->orderCollectionFactory->create()
             ->addAttributeToSelect('*');
 
@@ -86,20 +96,23 @@ class OrdersToJanisSender
             $orders->getSelect()->where('h.status IN (?)', $statuses);
         }
 
+        $this->JanisConnectorLogger->info('SQL Final: ' . $orders->getSelect()->__toString());
+        $this->JanisConnectorLogger->info('Janis Config: isInvoiceNotificationEnabled: ' . var_export($this->helper->isInvoiceNotificationEnabled(), true));
+
         // Evitar duplicados de pedidos por múltiples registros en historial
         $orders->getSelect()->group('main_table.entity_id');
 
-        // Procesar pedidos
+        $this->JanisConnectorLogger->info('Total orders to process: ' . $orders->count());
+
         foreach ($orders as $order) {
             // Enviar notificación de creación solo si no se ha notificado antes
+
             if ($order->getData('is_order_created_notified') == 0) {
                 $this->janisOrderService->sendOrderNotification($order, "is_order_created_notified");
             }
 
             // Enviar notificación de facturación solo si no se ha notificado antes
-            if ($this->helper->isInvoiceNotificationEnabled()
-                && $order->getData('is_order_invoice_notified') == 0
-            ) {
+            if ($this->helper->isInvoiceNotificationEnabled() && $order->getData('is_order_invoice_notified') == 0) {
                 $invoices = $order->getInvoiceCollection();
 
                 if (count($invoices) > 0) {

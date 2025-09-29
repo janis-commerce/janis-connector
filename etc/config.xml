@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
-        <janis_connection_section>
+        <janis_configuration_section>
 
             <janis_orders_group>
                 <janis_account_name></janis_account_name>
@@ -20,6 +20,6 @@
                 <janis_api_key/>
                 <janis_api_secret/>
             </janis_credentials_group>
-        </janis_connection_section>
+        </janis_configuration_section>
     </default>
 </config>
