@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.1] - 2025-09-29
+### Fixed
+- Fix getting janis settings
+- Remove unused code
+- Improve logger messages
+
 ## [2.0.0] - 2025-09-28
 ### Added
 - Added `LogViewer` in system configuration to display logs
