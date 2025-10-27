@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.0] - 2025-10-27
+### Added
+- The order cron was divided into two different ones to differentiate the created orders from the invoiced ones.
+- An Observer was added to be able to force historical records related to changes in order statuses,
+
 ## [2.0.1] - 2025-09-29
 ### Fixed
 - Fix getting janis settings
