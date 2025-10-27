@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="janis">
-        <job instance="JanisCommerce\JanisConnector\Cron\OrdersToJanisSender" method="execute" name="orders_to_janis_sender">
+        <job instance="JanisCommerce\JanisConnector\Cron\OrdersCreatedToJanisSender" method="execute" name="janis_connector_send_created_orders">
+            <schedule>* * * * *</schedule>
+        </job>
+        <job instance="JanisCommerce\JanisConnector\Cron\OrdersInvoicedToJanisSender" method="execute" name="janis_connector_send_invoiced_orders">
             <schedule>* * * * *</schedule>
         </job>
     </group>

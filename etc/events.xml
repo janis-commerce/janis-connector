@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+
+    <!-- Se ejecuta después de guardar la orden, y ya con status actualizado -->
+    <event name="sales_order_save_after">
+        <observer name="janis_force_history" instance="JanisCommerce\JanisConnector\Observer\ForceHistoryObserver" />
+    </event>
+
+</config>
