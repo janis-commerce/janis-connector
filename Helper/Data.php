@@ -113,6 +113,44 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Retrieves the Janis Commerce account endpoint URL based on environment
+     *
+     * @param string|null $id Account ID to append to the endpoint
+     * @param string|null $accountName Account name to add as query parameter filters[name]
+     * @return string
+     */
+    public function getJanisCommerceAccountEndpoint($id = null, $accountName = null)
+    {
+        $environment = $this->getEnvironment();
+
+        switch ($environment) {
+            case 'production':
+                $baseUrl = 'https://magento.commerce.janis.in/api/account';
+                break;
+            case 'qa':
+                $baseUrl = 'https://magento.commerce.janisqa.in/api/account';
+                break;
+            case 'beta':
+                $baseUrl = 'https://magento.commerce.janisdev.in/api/account';
+                break;
+            default:
+                $baseUrl = 'https://magento.commerce.janis.in/api/account'; // Default to production
+        }
+
+        if (!empty($id)) {
+            $baseUrl .= '/' . $id;
+        }
+
+        // Agregar query parameter filters[name] si se proporciona accountName
+        if (!empty($accountName)) {
+            $queryParams = ['filters[name]' => $accountName];
+            $baseUrl .= '?' . http_build_query($queryParams);
+        }
+
+        return $baseUrl;
+    }
+
+    /**
      * Retrieves the Janis endpoint URL for order notifications based on environment
      *
      * @return string

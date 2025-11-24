@@ -7,4 +7,8 @@
         <observer name="janis_force_history" instance="JanisCommerce\JanisConnector\Observer\ForceHistoryObserver" />
     </event>
 
+    <event name="admin_system_config_changed_section_janis_configuration_section">
+        <observer name="janis_config_save_observer" instance="JanisCommerce\JanisConnector\Observer\ConfigSaveObserver"/>
+    </event>
+
 </config>

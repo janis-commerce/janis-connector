@@ -1,11 +1,9 @@
 <?php
-declare(strict_types=1);
 
 namespace JanisCommerce\JanisConnector\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Status\HistoryFactory;
 use Psr\Log\LoggerInterface;
@@ -14,16 +12,14 @@ class ForceHistoryObserver implements ObserverInterface
 {
     private LoggerInterface $logger;
     private HistoryFactory $historyFactory;
-    private OrderRepositoryInterface $orderRepository;
+
 
     public function __construct(
         LoggerInterface $logger,
-        HistoryFactory $historyFactory,
-        OrderRepositoryInterface $orderRepository
+        HistoryFactory $historyFactory
     ) {
         $this->logger = $logger;
         $this->historyFactory = $historyFactory;
-        $this->orderRepository = $orderRepository;
     }
 
     /**
