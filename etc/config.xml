@@ -15,7 +15,7 @@
             </janis_simulate_group>
 
             <janis_credentials_group>
-                <api_environment>production</api_environment>
+                <api_environment>qa</api_environment>
                 <janis_client/>
                 <janis_api_key/>
                 <janis_api_secret/>
