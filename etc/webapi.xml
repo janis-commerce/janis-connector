@@ -6,4 +6,14 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+
+    <!-- Requiere autenticacion: version de modulo, version de PHP y rutas del
+         servidor son exactamente lo que se usa para fingerprinting, asi que
+         este endpoint no puede ser anonymous. -->
+    <route method="GET" url="/V1/janis-connector/system-information">
+        <service class="JanisCommerce\JanisConnector\Api\SystemInformationInterface" method="execute"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
 </routes>

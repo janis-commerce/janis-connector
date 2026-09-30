@@ -82,5 +82,20 @@
                 </field>
             </group>
         </section>
+
+        <!-- Solo lectura: version instalada, runtime y estado del cron propio -->
+        <section id="janis_system_info_section" sortOrder="30" showInWebsite="0" showInStore="0" showInDefault="1" translate="label">
+            <label>System Information</label>
+            <tab>janis</tab>
+            <resource>JanisCommerce_JanisConnector::config_JanisCommerce_JanisConnector</resource>
+
+            <group id="janis_system_info_group" sortOrder="10" showInDefault="1" translate="label">
+                <label>System Information</label>
+
+                <field id="system_information" translate="label" sortOrder="10" showInDefault="1" type="text">
+                    <frontend_model>JanisCommerce\JanisConnector\Block\Adminhtml\System\Config\SystemInformation</frontend_model>
+                </field>
+            </group>
+        </section>
 	</system>
 </config>
