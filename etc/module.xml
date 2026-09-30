@@ -1,4 +1,11 @@
 <?xml version="1.0" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="JanisCommerce_JanisConnector" setup_version="1.0.0"/>
+    <!-- Sin setup_version: deprecado desde 2.3, la version la toma PackageInfo
+         del composer.json. El sequence declara que este modulo extiende
+         sales_order y sales_order_grid, y debe cargar despues de Magento_Sales. -->
+    <module name="JanisCommerce_JanisConnector">
+        <sequence>
+            <module name="Magento_Sales"/>
+        </sequence>
+    </module>
 </config>
