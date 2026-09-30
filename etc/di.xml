@@ -2,6 +2,14 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="JanisCommerce\JanisConnector\Api\ReloadPdpCalendarDataInterface" type="JanisCommerce\JanisConnector\Model\ReloadPdpCalendarData"/>
 
+    <!-- Dias de log que se conservan en disco. Al crear el archivo del dia 31
+         se borra el mas viejo: es una ventana movil, no un corte por mes. -->
+    <type name="JanisCommerce\JanisConnector\Logger\Handler">
+        <arguments>
+            <argument name="maxFiles" xsi:type="number">30</argument>
+        </arguments>
+    </type>
+
     <type name="JanisCommerce\JanisConnector\Logger\JanisConnectorLogger">
         <arguments>
             <argument name="name" xsi:type="string">JanisConnector</argument>
