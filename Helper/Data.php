@@ -4,6 +4,7 @@ namespace JanisCommerce\JanisConnector\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Store\Model\ScopeInterface;
 
 class Data extends AbstractHelper
@@ -32,17 +33,30 @@ class Data extends AbstractHelper
     private $checkoutSession;
 
     /**
+     * @var EncryptorInterface
+     */
+    private $encryptor;
+
+    /**
      * Data constructor.
+     *
+     * The checkout session is injected as a proxy (see etc/di.xml) because this
+     * helper is also used from cron, where instantiating a checkout session is
+     * pointless: the proxy only builds it if a cart method is actually called.
+     *
      * @param Context $context
      * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param EncryptorInterface $encryptor
      */
     public function __construct(
         Context $context,
-        \Magento\Checkout\Model\Session $checkoutSession
+        \Magento\Checkout\Model\Session $checkoutSession,
+        EncryptorInterface $encryptor
     )
     {
         parent::__construct($context);
         $this->checkoutSession = $checkoutSession;
+        $this->encryptor = $encryptor;
     }
 
     /**
@@ -50,11 +64,12 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getEnvironment()
+    public function getEnvironment($store = null)
     {
         return $this->scopeConfig->getValue(
             self::API_ENVIRONMENT,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $store
         );
     }
 
@@ -63,11 +78,12 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getJanisClient()
+    public function getJanisClient($store = null)
     {
         return $this->scopeConfig->getValue(
             self::JANIS_CLIENT,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $store
         );
     }
 
@@ -77,11 +93,12 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getJanisApiKey()
+    public function getJanisApiKey($store = null)
     {
         return $this->scopeConfig->getValue(
             self::JANIS_API_KEY,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $store
         );
     }
 
@@ -91,12 +108,19 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getJanisApiSecret()
+    public function getJanisApiSecret($store = null)
     {
-        return $this->scopeConfig->getValue(
+        $value = $this->scopeConfig->getValue(
             self::JANIS_API_SECRET,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $store
         );
+
+        if (empty($value)) {
+            return $value;
+        }
+
+        return $this->encryptor->decrypt($value);
     }
 
     /**
@@ -104,11 +128,12 @@ class Data extends AbstractHelper
      *
      * @return mixed
      */
-    public function getJanisAccountName()
+    public function getJanisAccountName($store = null)
     {
         return $this->scopeConfig->getValue(
             self::JANIS_ACCOUNT_NAME,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $store
         );
     }
 
@@ -119,9 +144,9 @@ class Data extends AbstractHelper
      * @param string|null $accountName Account name to add as query parameter filters[name]
      * @return string
      */
-    public function getJanisCommerceAccountEndpoint($id = null, $accountName = null)
+    public function getJanisCommerceAccountEndpoint($id = null, $accountName = null, $store = null)
     {
-        $environment = $this->getEnvironment();
+        $environment = $this->getEnvironment($store);
 
         switch ($environment) {
             case 'production':
@@ -155,9 +180,9 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getJanisEndpointToNotifyOrder()
+    public function getJanisEndpointToNotifyOrder($store = null)
     {
-        $environment = $this->getEnvironment();
+        $environment = $this->getEnvironment($store);
 
         switch ($environment) {
             case 'production':
@@ -176,9 +201,9 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getJanisEndpointToSplitCarts()
+    public function getJanisEndpointToSplitCarts($store = null)
     {
-        $environment = $this->getEnvironment();
+        $environment = $this->getEnvironment($store);
 
         switch ($environment) {
             case 'production':
@@ -197,11 +222,12 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getJanisSalesChannelId()
+    public function getJanisSalesChannelId($store = null)
     {
         return $this->scopeConfig->getValue(
             self::JANIS_SALES_CHANNEL_ID,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $store
         );
     }
 
@@ -299,11 +325,12 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getOrderCreatedStatus()
+    public function getOrderCreatedStatus($store = null)
     {
         return $this->scopeConfig->getValue(
             self::ORDER_CREATED_STATUS,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $store
         );
     }
 
@@ -312,11 +339,12 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getOrderInvoicedStatus()
+    public function getOrderInvoicedStatus($store = null)
     {
         return $this->scopeConfig->getValue(
             self::ORDER_INVOICED_STATUS,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $store
         );
     }
 
@@ -325,11 +353,12 @@ class Data extends AbstractHelper
      *
      * @return bool
      */
-    public function isInvoiceNotificationEnabled()
+    public function isInvoiceNotificationEnabled($store = null)
     {
         return (bool)$this->scopeConfig->getValue(
             self::NOTIFY_INVOICE,
-            ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE,
+            $store
         );
     }
 }

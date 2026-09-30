@@ -63,6 +63,7 @@
 				</field>
 				<field id="janis_api_secret" type="password" sortOrder="30" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
 					<label>Janis API Secret</label>
+					<backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
 				</field>
 			</group>
 		</section>

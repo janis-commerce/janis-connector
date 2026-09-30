@@ -2,6 +2,14 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="JanisCommerce\JanisConnector\Api\ReloadPdpCalendarDataInterface" type="JanisCommerce\JanisConnector\Model\ReloadPdpCalendarData"/>
 
+    <!-- El helper tambien corre en cron: la sesion de checkout solo se instancia
+         si efectivamente se usa alguno de los metodos de carrito. -->
+    <type name="JanisCommerce\JanisConnector\Helper\Data">
+        <arguments>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+
     <type name="JanisCommerce\JanisConnector\Logger\JanisConnectorLogger">
         <arguments>
             <argument name="name" xsi:type="string">JanisConnector</argument>
