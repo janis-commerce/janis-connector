@@ -3,13 +3,21 @@
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
     <table name="sales_order" resource="default" engine="innodb">
-        <column xsi:type="boolean" name="is_order_created_notified" nullable="false" comment="Value to save janis order created notification state"/>
-        <column xsi:type="boolean" name="is_order_invoice_notified" nullable="false" comment="Value to save janis order invoice notification state"/>
+        <column xsi:type="boolean" name="is_order_created_notified" nullable="false" default="0" comment="Value to save janis order created notification state"/>
+        <column xsi:type="boolean" name="is_order_invoice_notified" nullable="false" default="0" comment="Value to save janis order invoice notification state"/>
+
+        <!-- Los crons filtran por estas columnas cada corrida: sin indice es un full scan de sales_order -->
+        <index referenceId="JANIS_SALES_ORDER_IS_ORDER_CREATED_NOTIFIED" indexType="btree">
+            <column name="is_order_created_notified"/>
+        </index>
+        <index referenceId="JANIS_SALES_ORDER_IS_ORDER_INVOICE_NOTIFIED" indexType="btree">
+            <column name="is_order_invoice_notified"/>
+        </index>
     </table>
 
     <!-- Updating notification fields in sales_order_grid every time that changes in sales_order -->
     <table name="sales_order_grid" resource="default" engine="innodb">
-        <column xsi:type="boolean" name="is_order_created_notified" nullable="false" comment="Value to save janis order created notification state"/>
-        <column xsi:type="boolean" name="is_order_invoice_notified" nullable="false" comment="Value to save janis order invoice notification state"/>
+        <column xsi:type="boolean" name="is_order_created_notified" nullable="false" default="0" comment="Value to save janis order created notification state"/>
+        <column xsi:type="boolean" name="is_order_invoice_notified" nullable="false" default="0" comment="Value to save janis order invoice notification state"/>
     </table>
 </schema>
