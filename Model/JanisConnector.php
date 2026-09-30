@@ -2,6 +2,7 @@
 
 namespace JanisCommerce\JanisConnector\Model;
 
+use JanisCommerce\JanisConnector\Exception\JanisApiException;
 use JanisCommerce\JanisConnector\Helper\Data;
 use JanisCommerce\JanisConnector\Logger\JanisConnectorLogger;
 use JanisCommerce\JanisConnector\Util\Rest;
@@ -21,14 +22,6 @@ abstract class JanisConnector
     const URL_PROTOCOL = 'https';
 
     /**
-     * @var \Magento\Framework\UrlInterface
-     */
-    private $url;
-    /**
-     * @var \Magento\Framework\App\ResponseFactory
-     */
-    private $responseFactory;
-    /**
      * @var JanisConnectorLogger
      */
     private $JanisConnectorLogger;
@@ -38,22 +31,16 @@ abstract class JanisConnector
      * JanisConnector constructor.
      * @param Rest $rest
      * @param Data $helperData
-     * @param \Magento\Framework\UrlInterface $url
-     * @param \Magento\Framework\App\ResponseFactory $responseFactory
      * @param JanisConnectorLogger $JanisConnectorLogger
      */
     public function __construct(
         Rest $rest,
         Data $helperData,
-        \Magento\Framework\UrlInterface $url,
-        \Magento\Framework\App\ResponseFactory $responseFactory,
         JanisConnectorLogger $JanisConnectorLogger
     )
     {
         $this->rest = $rest;
         $this->helperData = $helperData;
-        $this->url = $url;
-        $this->responseFactory = $responseFactory;
         $this->JanisConnectorLogger = $JanisConnectorLogger;
     }
 
@@ -62,73 +49,99 @@ abstract class JanisConnector
      *
      * @param string $endpoint Url endpoint to request a GET petition
      * @return array|null Response
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws JanisApiException When the request fails or Janis answers a non 2xx status
      */
     public function get($endpoint)
     {
-        try{
-            $response = $this->rest->request($endpoint, 'GET');
-            $this->checkResponseStatus($this->rest->getStatus());
-            return $response;
-        }
-        catch (\Exception $e)
-        {
-            $this->redirectAfterError($e->getMessage());
-        }
+        $response = $this->send($endpoint, 'GET');
 
-        return [];
+        $this->checkResponseStatus($this->rest->getStatus(), $endpoint, $response);
+
+        return $response;
     }
 
     /**
      * Rest request to be able to connect with Janis EPs
      *
      * @param string $endpoint Url endpoint to request a POST petition
-     * @param array $params Request custom params
+     * @param array|string $params Request custom params
      * @return array|null Response
+     * @throws JanisApiException When the request fails or Janis answers a non 2xx status
      */
     public function post($endpoint, $params)
     {
-        try{
-            $response = $this->rest->request($endpoint, 'POST', $params);
-            $this->JanisConnectorLogger->info('Endpoint URL: ' . $endpoint);
-            //$this->JanisConnectorLogger->info('Body Payload sended: ' . print_r(json_decode($params), true));
-            $this->JanisConnectorLogger->info('Body Payload sended: ' . $params);
-            $this->checkResponseStatus($this->rest->getStatus());
-            $this->JanisConnectorLogger->info("Response payload: " . json_encode($response));
+        $this->JanisConnectorLogger->info('Endpoint URL: ' . $endpoint);
+        $this->JanisConnectorLogger->info('Body Payload sended: ' . (is_string($params) ? $params : json_encode($params)));
 
-            return $response;
-        }
-        catch (\Exception $e)
-        {
-            $this->redirectAfterError($e->getMessage());
-        }
+        $response = $this->send($endpoint, 'POST', $params);
 
-        return [];
+        $this->checkResponseStatus($this->rest->getStatus(), $endpoint, $response);
+
+        $this->JanisConnectorLogger->info('Response payload: ' . json_encode($response));
+
+        return $response;
     }
 
-    private function checkResponseStatus($statusCode)
+    /**
+     * Performs the request and wraps any transport level failure (DNS, timeout,
+     * malformed body) into a JanisApiException, so every caller sees a single
+     * exception type regardless of where the failure happened.
+     *
+     * @param string $endpoint
+     * @param string $httpMethod
+     * @param array|string $params
+     * @return array|null
+     * @throws JanisApiException
+     */
+    private function send($endpoint, $httpMethod, $params = [])
     {
-        // Some EP error message
-        if( (int)$statusCode !== 200 )
-        {
-            $this->redirectAfterError($statusCode);
-        }
-        else
-        {
-            $this->JanisConnectorLogger->info('Connection status: '. $statusCode);
+        try {
+            return $this->rest->request($endpoint, $httpMethod, $params);
+        } catch (\Exception $e) {
+            $this->JanisConnectorLogger->error(sprintf(
+                'Janis %s request to %s could not be completed: %s',
+                $httpMethod,
+                $endpoint,
+                $e->getMessage()
+            ));
+
+            throw new JanisApiException(
+                __('The %1 request to Janis could not be completed: %2', $httpMethod, $e->getMessage()),
+                0,
+                null,
+                $e
+            );
         }
     }
 
     /**
-     * Triggers redirect to error message page
+     * Any 2xx is a success. Anything else throws, so the caller decides whether
+     * to retry, skip the record or surface the error.
      *
-     * @param string $message Error message
+     * @param int $statusCode
+     * @param string $endpoint
+     * @param mixed $response
+     * @throws JanisApiException
      */
-    private function redirectAfterError($statusCode)
+    private function checkResponseStatus($statusCode, $endpoint, $response = null)
     {
-        $CustomRedirectionUrl = $this->url->getUrl('janis/error/index');
-        $this->responseFactory->create()->setRedirect($CustomRedirectionUrl)->sendResponse();
-        $this->JanisConnectorLogger->info('Connection Error: '. $statusCode);
-        exit();
+        $statusCode = (int)$statusCode;
+
+        if ($statusCode >= 200 && $statusCode < 300) {
+            $this->JanisConnectorLogger->info('Connection status: ' . $statusCode);
+            return;
+        }
+
+        $this->JanisConnectorLogger->error(sprintf(
+            'Janis answered status %s for %s',
+            $statusCode,
+            $endpoint
+        ));
+
+        throw new JanisApiException(
+            __('Janis answered status %1.', $statusCode),
+            $statusCode,
+            $response
+        );
     }
 }
