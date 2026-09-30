@@ -77,8 +77,14 @@
             <group id="janis_logs_group" sortOrder="10" showInDefault="1">
                 <label>Logs</label>
 
+                <field id="lines_to_display" translate="label" type="text" sortOrder="5" showInDefault="1">
+                    <label>Lines to display</label>
+                    <comment>How many of the most recent lines to show. Defaults to 200.</comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+
                 <field id="log_viewer" translate="label" sortOrder="10" showInDefault="1" type="text">
-                    <comment>Showing latest entries from /var/log/janis_connector.log</comment>
+                    <comment>Most recent entries first, read from the current day's file in var/log. Files older than 30 days are removed automatically.</comment>
                     <frontend_model>JanisCommerce\JanisConnector\Block\Adminhtml\System\Config\LogViewer</frontend_model>
                 </field>
             </group>

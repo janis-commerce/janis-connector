@@ -1,6 +1,7 @@
 <?php
 namespace JanisCommerce\JanisConnector\Controller\Adminhtml\Log;
 
+use JanisCommerce\JanisConnector\Model\Log\Reader;
 use Magento\Backend\App\Action;
 use Magento\Framework\Controller\Result\RawFactory;
 
@@ -10,24 +11,39 @@ class Ajax extends Action
 
     private $resultRawFactory;
 
+    /**
+     * @var Reader
+     */
+    private $reader;
+
     public function __construct(
         Action\Context $context,
-        RawFactory $resultRawFactory
+        RawFactory $resultRawFactory,
+        Reader $reader
     ) {
         parent::__construct($context);
         $this->resultRawFactory = $resultRawFactory;
+        $this->reader = $reader;
     }
 
     public function execute()
     {
-        $logFile = BP . '/var/log/janis_connector.log';
-        $output = __('Log file not found.');
+        $lines = $this->reader->tail($this->getRequestedLines(), true);
 
-        if (file_exists($logFile)) {
-            $lines = explode("\n", file_get_contents($logFile));
-            $output = implode("\n", array_slice($lines, -200)); // últimas 200 líneas
-        }
+        $output = $lines
+            ? implode("\n", $lines)
+            : (string)__('Log file not found.');
 
         return $this->resultRawFactory->create()->setContents($output);
+    }
+
+    /**
+     * @return int
+     */
+    private function getRequestedLines()
+    {
+        $requested = (int)$this->getRequest()->getParam('lines');
+
+        return $requested > 0 ? min($requested, 2000) : Reader::DEFAULT_LINES;
     }
 }
