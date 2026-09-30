@@ -44,8 +44,6 @@ class JanisCartService extends JanisConnector
      * @param \Magento\Catalog\Model\ProductRepository $productRepository
      * @param \Magento\Quote\Model\Quote\ItemFactory $quoteItemFactory
      * @param \Magento\Checkout\Model\Cart $cartModel
-     * @param \Magento\Framework\UrlInterface $url
-     * @param \Magento\Framework\App\ResponseFactory $responseFactory
      */
     public function __construct(
         Rest $rest,
@@ -56,12 +54,10 @@ class JanisCartService extends JanisConnector
         \Magento\Catalog\Model\ProductFactory $product,
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Quote\Model\Quote\ItemFactory $quoteItemFactory,
-        \Magento\Checkout\Model\Cart $cartModel,
-        \Magento\Framework\UrlInterface $url,
-        \Magento\Framework\App\ResponseFactory $responseFactory
+        \Magento\Checkout\Model\Cart $cartModel
     )
     {
-        parent::__construct($rest, $helper, $url, $responseFactory, $JanisConnectorLogger);
+        parent::__construct($rest, $helper, $JanisConnectorLogger);
         $this->helper = $helper;
         $this->JanisConnectorLogger = $JanisConnectorLogger;
         $this->product = $product;

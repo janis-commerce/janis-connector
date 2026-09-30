@@ -3,7 +3,6 @@
 namespace JanisCommerce\JanisConnector\Util;
 
 
-use Magento\Framework\HTTP\ZendClientFactory;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\HTTP\Client\Curl;
 use JanisCommerce\JanisConnector\Helper\Data;
@@ -11,11 +10,13 @@ use JanisCommerce\JanisConnector\Helper\Data;
 class Rest extends Api
 {
     /**
-     * @var ZendClientFactory
+     * Seconds to wait for Janis before giving up. Without it a slow endpoint
+     * holds the cron process until PHP's own execution limit kicks in.
      */
-    private $httpClientFactory;
+    const REQUEST_TIMEOUT = 30;
+
     /**
-     * @var Magento\Framework\HTTP\Client\Curl
+     * @var Curl
      */
     private $curl;
     /**
@@ -30,14 +31,12 @@ class Rest extends Api
     private $status;
 
     public function __construct(
-        ZendClientFactory $httpClientFactory,
         Json $serializeJson,
         Curl $curl,
         Data $helperData
     )
     {
         parent::__construct($serializeJson);
-        $this->httpClientFactory = $httpClientFactory;
         $this->curl = $curl;
         $this->serializeJson = $serializeJson;
         $this->helperData = $helperData;
@@ -60,6 +59,7 @@ class Rest extends Api
 
         $this->curl->setHeaders($userData);
         $this->curl->addHeader("Content-Type", "application/json");
+        $this->curl->setTimeout(self::REQUEST_TIMEOUT);
 
         if ($httpMethod === 'GET')
             $this->curl->get($apiUrl);
