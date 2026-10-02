@@ -29,6 +29,12 @@ class Reader
     const DEFAULT_LINES = 200;
 
     /**
+     * Upper bound for a single incremental read, so a burst of log activity
+     * cannot flood the browser with megabytes in one poll.
+     */
+    const MAX_BYTES_PER_READ = 262144;
+
+    /**
      * @var DirectoryList
      */
     private $directoryList;
@@ -109,6 +115,70 @@ class Reader
         sort($files);
 
         return $files;
+    }
+
+    /**
+     * New content appended to the file after the given byte offset.
+     *
+     * Only whole lines are returned: a trailing fragment, written while the
+     * logger is still flushing the entry, stays for the next read.
+     *
+     * @param string $file
+     * @param int $offset
+     * @param int $maxBytes
+     * @return array{lines: string[], offset: int}
+     */
+    public function readSince($file, $offset, $maxBytes = self::MAX_BYTES_PER_READ)
+    {
+        $offset = max(0, (int)$offset);
+        $size = $this->getFileSize($file);
+
+        if ($offset >= $size) {
+            return ['lines' => [], 'offset' => $offset];
+        }
+
+        $handle = @fopen($file, 'rb');
+
+        if (!$handle) {
+            return ['lines' => [], 'offset' => $offset];
+        }
+
+        fseek($handle, $offset, SEEK_SET);
+
+        $chunk = fread($handle, min((int)$maxBytes, $size - $offset));
+
+        fclose($handle);
+
+        if (!is_string($chunk) || $chunk === '') {
+            return ['lines' => [], 'offset' => $offset];
+        }
+
+        $lastBreak = strrpos($chunk, "\n");
+
+        if ($lastBreak === false) {
+            // The entry is still being written, pick it up on the next read.
+            return ['lines' => [], 'offset' => $offset];
+        }
+
+        $lines = preg_split('/\r\n|\n|\r/', substr($chunk, 0, $lastBreak));
+
+        return [
+            'lines' => $lines === false ? [] : $lines,
+            'offset' => $offset + $lastBreak + 1
+        ];
+    }
+
+    /**
+     * @param string $file
+     * @return int
+     */
+    public function getFileSize($file)
+    {
+        clearstatcache(true, $file);
+
+        $size = @filesize($file);
+
+        return $size === false ? 0 : (int)$size;
     }
 
     /**

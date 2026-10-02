@@ -1,0 +1,36 @@
+<?php
+/**
+ * @var \JanisCommerce\JanisConnector\Block\Adminhtml\System\Config\LogViewer $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+?>
+<div class="janis-log-viewer"
+     data-mage-init="<?= $block->escapeHtmlAttr('{"JanisCommerce_JanisConnector/js/log-viewer": ' . $block->getViewerConfig() . '}') ?>">
+
+    <div class="janis-log-viewer-toolbar">
+        <span class="janis-log-viewer-file" data-role="file"><?= $block->escapeHtml($block->getCurrentFileName()) ?></span>
+
+        <label class="janis-log-viewer-option">
+            <input type="checkbox" data-role="auto" checked="checked"/>
+            <?= $block->escapeHtml(__('Auto-refresh')) ?>
+        </label>
+
+        <select class="janis-log-viewer-option" data-role="interval">
+            <?php foreach ($block->getIntervalOptions() as $value => $label): ?>
+                <option value="<?= $block->escapeHtmlAttr($value) ?>"><?= $block->escapeHtml($label) ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <button type="button" class="janis-log-viewer-option" data-role="refresh">
+            <?= $block->escapeHtml(__('Reload')) ?>
+        </button>
+
+        <span class="janis-log-viewer-status" data-role="status"></span>
+    </div>
+
+    <pre class="janis-log-viewer-output" data-role="output"><?= $block->escapeHtml(__('Loading...')) ?></pre>
+
+    <p class="janis-log-viewer-hint">
+        <?= $block->escapeHtml(__('Newest entries at the bottom. The view follows the log while it is scrolled to the end.')) ?>
+    </p>
+</div>
