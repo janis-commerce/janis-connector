@@ -40,6 +40,16 @@ class OrderNotification extends AbstractAttributeMapper
         $payload = $this->addToPayload('status', $this->obj->getStatus(), $payload);
         $payload = $this->addToPayload('statusCode', $this->obj->getState(), $payload);
 
+        // The store lets Janis resolve the order's scope without asking Magento for it again.
+        // It is sent as Magento returns it, and omitted when there is none: the hook accepts a
+        // string or a number but rejects a null, and resolves the scope on its own when absent.
+        $storeId = $this->obj->getStoreId();
+
+        if ($storeId !== null)
+        {
+            $payload = $this->addToPayload('storeId', $storeId, $payload);
+        }
+
         if ($jsonEncoded)
         {
             return json_encode($payload);
