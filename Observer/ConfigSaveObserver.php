@@ -66,7 +66,26 @@ class ConfigSaveObserver implements ObserverInterface
         $this->logger = $logger;
     }
 
+    /**
+     * Saving the configuration must never fail because of this: whatever goes
+     * wrong -- Janis down, wrong credentials, a broken encrypted value -- is
+     * logged and the administrator keeps the changes just saved. At worst the
+     * settings do not reach Janis and Last Update stays where it was.
+     */
     public function execute(Observer $observer): void
+    {
+        try {
+            $this->sync($observer);
+        } catch (\Throwable $e) {
+            $this->logger->error('[JanisConnector] Settings were not sent to Janis: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @param Observer $observer
+     * @throws \Throwable
+     */
+    private function sync(Observer $observer)
     {
         if ($observer->getEvent()->getSection() !== self::SECTION) {
             return;
@@ -78,16 +97,11 @@ class ConfigSaveObserver implements ObserverInterface
             return;
         }
 
-        try {
-            $accountId = $this->accountService->pushSettings($accountName);
-        } catch (\Throwable $e) {
-            $this->logger->error('[JanisConnector] Settings were not sent to Janis: ' . $e->getMessage());
-            return;
-        }
-
-        $this->registerLastUpdate();
+        $accountId = $this->accountService->pushSettings($accountName);
 
         $this->logger->info('[JanisConnector] Settings sent to Janis.', ['accountId' => $accountId]);
+
+        $this->registerLastUpdate();
     }
 
     /**
@@ -122,14 +136,22 @@ class ConfigSaveObserver implements ObserverInterface
      * Leaves the moment of the last successful sync on the configuration
      * screen. The scope config is reloaded so the field already shows it when
      * the page comes back.
+     *
+     * Never throws: the sync already happened and the save must not fail here.
      */
     private function registerLastUpdate()
     {
-        $this->configWriter->save(
-            Data::LAST_UPDATE,
-            $this->timezone->date()->format(self::LAST_UPDATE_FORMAT)
-        );
+        try {
+            $this->configWriter->save(
+                Data::LAST_UPDATE,
+                $this->timezone->date()->format(self::LAST_UPDATE_FORMAT)
+            );
 
-        $this->reinitableConfig->reinit();
+            $this->reinitableConfig->reinit();
+        } catch (\Throwable $e) {
+            // The settings did reach Janis: failing to stamp the date is worth
+            // a warning, not an error that hides a sync that actually worked.
+            $this->logger->warning('[JanisConnector] Could not record the last update date: ' . $e->getMessage());
+        }
     }
 }
