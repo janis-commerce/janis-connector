@@ -55,7 +55,7 @@ define([
             offset = null,
             file = null,
             timer = null,
-            pending = null;
+            pending = false;
 
         /**
          * @returns {Boolean}
@@ -145,7 +145,11 @@ define([
                 data.file = file;
             }
 
-            pending = $.ajax({
+            // Flagged before the call so a synchronous failure cannot leave the
+            // component thinking a request is still in flight.
+            pending = true;
+
+            $.ajax({
                 url: config.url,
                 data: data,
                 dataType: 'json',
@@ -154,7 +158,7 @@ define([
             }).done(consume).fail(function () {
                 setStatus($t('Could not reach the server, retrying...'), true);
             }).always(function () {
-                pending = null;
+                pending = false;
                 schedule();
             });
         }
