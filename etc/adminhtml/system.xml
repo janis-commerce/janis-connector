@@ -37,6 +37,12 @@
                     </depends>
                 </field>
 
+                <!-- Solo lectura: lo escribe el observer tras sincronizar con Janis -->
+                <field id="last_update" translate="label" type="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Last Update</label>
+                    <comment>When these settings were last sent to Janis. Empty means they were never sent.</comment>
+                </field>
+
             </group>
 
             <group id="janis_simulate_group" sortOrder="20" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">

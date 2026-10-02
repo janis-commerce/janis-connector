@@ -26,6 +26,7 @@ class Data extends AbstractHelper
     const NOTIFY_INVOICE = "janis_configuration_section/janis_orders_group/notify_invoice";
     const ORDER_CREATED_STATUS = "janis_configuration_section/janis_orders_group/order_created_status";
     const ORDER_INVOICED_STATUS = "janis_configuration_section/janis_orders_group/order_invoiced_status";
+    const LAST_UPDATE = "janis_configuration_section/janis_orders_group/last_update";
 
     /**
      * @var \Magento\Checkout\Model\Session
@@ -357,6 +358,20 @@ class Data extends AbstractHelper
     {
         return (bool)$this->scopeConfig->getValue(
             self::NOTIFY_INVOICE,
+            ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
+     * Retrieves the moment the settings were last sent to Janis
+     *
+     * @return string|null
+     */
+    public function getLastUpdate($store = null)
+    {
+        return $this->scopeConfig->getValue(
+            self::LAST_UPDATE,
             ScopeInterface::SCOPE_STORE,
             $store
         );
