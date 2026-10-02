@@ -79,12 +79,12 @@
 
                 <field id="lines_to_display" translate="label" type="text" sortOrder="5" showInDefault="1">
                     <label>Lines to display</label>
-                    <comment>How many of the most recent lines to show. Defaults to 200.</comment>
+                    <comment>How many of the most recent lines to load when the viewer opens. Defaults to 200.</comment>
                     <validate>validate-digits validate-greater-than-zero</validate>
                 </field>
 
                 <field id="log_viewer" translate="label" sortOrder="10" showInDefault="1" type="text">
-                    <comment>Most recent entries first, read from the current day's file in var/log. Files older than 30 days are removed automatically.</comment>
+                    <comment>Live view of the current day's file in var/log, newest entries at the bottom. It refreshes on its own while the section is open. Files older than 30 days are removed automatically.</comment>
                     <frontend_model>JanisCommerce\JanisConnector\Block\Adminhtml\System\Config\LogViewer</frontend_model>
                 </field>
             </group>

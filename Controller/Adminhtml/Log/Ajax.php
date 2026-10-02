@@ -3,13 +3,24 @@ namespace JanisCommerce\JanisConnector\Controller\Adminhtml\Log;
 
 use JanisCommerce\JanisConnector\Model\Log\Reader;
 use Magento\Backend\App\Action;
-use Magento\Framework\Controller\Result\RawFactory;
+use Magento\Framework\Controller\Result\JsonFactory;
 
+/**
+ * Feeds the log viewer of the configuration screen.
+ *
+ * The first call returns the tail of the current file together with its size.
+ * Every following call sends that size back as an offset and only the bytes
+ * appended since then travel to the browser, so polling stays cheap no matter
+ * how large the file grows.
+ */
 class Ajax extends Action
 {
     const ADMIN_RESOURCE = 'JanisCommerce_JanisConnector::config_JanisCommerce_JanisConnector';
 
-    private $resultRawFactory;
+    /**
+     * @var JsonFactory
+     */
+    private $resultJsonFactory;
 
     /**
      * @var Reader
@@ -18,23 +29,74 @@ class Ajax extends Action
 
     public function __construct(
         Action\Context $context,
-        RawFactory $resultRawFactory,
+        JsonFactory $resultJsonFactory,
         Reader $reader
     ) {
         parent::__construct($context);
-        $this->resultRawFactory = $resultRawFactory;
+        $this->resultJsonFactory = $resultJsonFactory;
         $this->reader = $reader;
     }
 
     public function execute()
     {
-        $lines = $this->reader->tail($this->getRequestedLines(), true);
+        $result = $this->resultJsonFactory->create();
 
-        $output = $lines
-            ? implode("\n", $lines)
-            : (string)__('Log file not found.');
+        $file = $this->reader->resolveCurrentFile();
 
-        return $this->resultRawFactory->create()->setContents($output);
+        if (!$file) {
+            return $result->setData([
+                'file' => null,
+                'offset' => 0,
+                'lines' => [],
+                'reset' => true,
+                'message' => (string)__('No log entries yet.')
+            ]);
+        }
+
+        $name = basename($file);
+
+        if ($this->shouldReload($name)) {
+            return $result->setData([
+                'file' => $name,
+                'offset' => $this->reader->getFileSize($file),
+                'lines' => $this->reader->tail($this->getRequestedLines(), false),
+                'reset' => true,
+                'message' => null
+            ]);
+        }
+
+        $appended = $this->reader->readSince($file, (int)$this->getRequest()->getParam('offset'));
+
+        return $result->setData([
+            'file' => $name,
+            'offset' => $appended['offset'],
+            'lines' => $appended['lines'],
+            'reset' => false,
+            'message' => null
+        ]);
+    }
+
+    /**
+     * Whether the whole tail has to be sent again instead of the new bytes.
+     *
+     * Happens on the first call, when the viewer is still showing yesterday's
+     * file after the daily rotation, and when the file shrank -- the offset the
+     * browser holds no longer points at the same content.
+     *
+     * @param string $name Base name of the file currently being written
+     * @return bool
+     */
+    private function shouldReload($name)
+    {
+        $request = $this->getRequest();
+
+        $offset = $request->getParam('offset');
+
+        if ($offset === null || $offset === '' || $request->getParam('file') !== $name) {
+            return true;
+        }
+
+        return (int)$offset > $this->reader->getFileSize($this->reader->resolveCurrentFile());
     }
 
     /**

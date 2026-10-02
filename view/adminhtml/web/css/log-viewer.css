@@ -1,0 +1,57 @@
+.janis-log-viewer {
+    max-width: 100%;
+}
+
+.janis-log-viewer-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: #666;
+}
+
+.janis-log-viewer-file {
+    font-family: monospace;
+    font-weight: 600;
+    color: #303030;
+}
+
+.janis-log-viewer-option {
+    font-size: 12px;
+    margin: 0;
+}
+
+.janis-log-viewer-status {
+    margin-left: auto;
+    font-style: italic;
+}
+
+.janis-log-viewer-status._error {
+    color: #e22626;
+    font-style: normal;
+}
+
+.janis-log-viewer-output {
+    background: #000;
+    color: #0f0;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    overflow: auto;
+    max-height: 600px;
+    min-height: 200px;
+    padding: 10px;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.janis-log-viewer-hint {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #666;
+}
