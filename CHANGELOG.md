@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- The order notification payload includes the order's `storeId`, so Janis can resolve the order's scope without asking Magento for it again (JHUB-1361)
+- The order notification payload includes the order's `storeViewId`, so Janis can resolve the order's REST scope without asking Magento for it again (JHUB-1361)
 
 ## [2.2.1] - 2025-11-24
 ### Fixed

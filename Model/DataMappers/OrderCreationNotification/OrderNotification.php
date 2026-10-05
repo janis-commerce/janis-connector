@@ -40,14 +40,18 @@ class OrderNotification extends AbstractAttributeMapper
         $payload = $this->addToPayload('status', $this->obj->getStatus(), $payload);
         $payload = $this->addToPayload('statusCode', $this->obj->getState(), $payload);
 
-        // The store lets Janis resolve the order's scope without asking Magento for it again.
-        // It is sent as Magento returns it, and omitted when there is none: the hook accepts a
-        // string or a number but rejects a null, and resolves the scope on its own when absent.
-        $storeId = $this->obj->getStoreId();
+        // Magento's `sales_order.store_id` is a store VIEW, not what the admin calls a Store: it points
+        // to the `store` table, which holds the views, while the admin's Stores live in `store_group`.
+        // The key is named after the entity it really carries, because the scope Janis needs to reach
+        // this order over REST is the store view's and not the group's.
+        //
+        // It is sent as Magento returns it -- the hook accepts a string or a number -- and omitted when
+        // there is none: the hook rejects a null and resolves the scope on its own when the key is absent.
+        $storeViewId = $this->obj->getStoreId();
 
-        if ($storeId !== null)
+        if ($storeViewId !== null)
         {
-            $payload = $this->addToPayload('storeId', $storeId, $payload);
+            $payload = $this->addToPayload('storeViewId', $storeViewId, $payload);
         }
 
         if ($jsonEncoded)
