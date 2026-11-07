@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - The log rotates daily and keeps a rolling window of the last 30 days, and both readers walk the file backwards instead of loading it whole, so opening the configuration screen no longer exhausts PHP's memory (JHUB-1368)
+- System Information panel with the installed version, the PHP runtime, the Magento mode, the Magento and database clocks and the last runs of the Janis crons, also exposed for remote auditing at `GET /V1/janis-connector/system-information` (JHUB-1369)
+- `composer.json` declares the module version, so an instance running the module from `app/code` reports it instead of nothing (JHUB-1369)
+
+### Removed
+- The deprecated `setup_version` in `module.xml`, unused since Magento 2.3 and out of sync with the real version (JHUB-1369)
 
 ## [2.2.1] - 2025-11-24
 ### Fixed
