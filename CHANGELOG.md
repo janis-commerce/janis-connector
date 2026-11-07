@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - The order statuses now travel on every save, including when they are cleared: an emptied status reaches Janis as null instead of leaving the previous one in place, and the invoiced status follows the invoice notification switch (JHUB-1387)
+- The order notification payload includes the order's `storeViewId`, so Janis can resolve the order's REST scope without asking Magento for it again (JHUB-1361)
 
 ## [2.2.1] - 2025-11-24
 ### Fixed
