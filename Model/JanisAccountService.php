@@ -23,13 +23,27 @@ use JanisCommerce\JanisConnector\Util\Rest;
 class JanisAccountService
 {
     /**
-     * Account fields Janis accepts as they are.
+     * Account fields Janis accepts as they are. All of them travel on every
+     * save: `server` and `status` because the schema makes them mandatory, and
+     * the rest because the account is sent whole.
+     *
+     * `accessToken` is deliberately out. The schema accepts it and the read
+     * returns it, but it is a credential and Janis keeps the stored one when
+     * the request leaves it out, so there is no reason to move it around.
      */
     const ACCOUNT_FIELDS = [
         'name',
         'server',
         'status',
         'linkedAccounts'
+    ];
+
+    /**
+     * Value sent for an account field Janis did not return, so the key travels
+     * anyway instead of being dropped from the request.
+     */
+    const ACCOUNT_FIELD_DEFAULTS = [
+        'linkedAccounts' => []
     ];
 
     /**
@@ -166,6 +180,8 @@ class JanisAccountService
         foreach (self::ACCOUNT_FIELDS as $field) {
             if (array_key_exists($field, $account)) {
                 $payload[$field] = $account[$field];
+            } elseif (array_key_exists($field, self::ACCOUNT_FIELD_DEFAULTS)) {
+                $payload[$field] = self::ACCOUNT_FIELD_DEFAULTS[$field];
             }
         }
 
@@ -173,11 +189,10 @@ class JanisAccountService
             $payload[$feature] = !empty($account[$feature]);
         }
 
-        $behaviors = $this->pick($account['behaviors'] ?? [], self::ACCOUNT_BEHAVIORS);
-
-        if ($behaviors) {
-            $payload['behaviors'] = $behaviors;
-        }
+        // The block always travels, even empty: Janis rebuilds `behaviors` from
+        // the request, so leaving it out is not "do not touch it", it is "reset
+        // it". The same goes for `oms`.
+        $payload['behaviors'] = $this->pick($account['behaviors'] ?? [], self::ACCOUNT_BEHAVIORS);
 
         $payload['oms'] = $this->buildOms($account['oms'] ?? []);
 
@@ -187,6 +202,15 @@ class JanisAccountService
     /**
      * OMS block of the account, with the order statuses taken from Magento.
      *
+     * Magento owns both statuses, so both are sent on every save and the ones
+     * it no longer has travel as null. Keeping the value Janis already held
+     * when the administrator clears a status would leave Janis waiting for a
+     * notification Magento stopped sending, and the configuration screen
+     * showing something different from what Janis actually has.
+     *
+     * The invoiced status follows the invoice notification switch for the same
+     * reason: with the notification off nothing will ever reach that status.
+     *
      * @param array $currentOms
      * @return array
      */
@@ -194,24 +218,16 @@ class JanisAccountService
     {
         $oms = $this->pick($currentOms, self::OMS_FIELDS);
 
-        $statuses = isset($oms['orderImportStatuses']) && is_array($oms['orderImportStatuses'])
-            ? $oms['orderImportStatuses']
-            : [];
-
         $createdStatus = $this->helper->getOrderCreatedStatus();
-        $invoicedStatus = $this->helper->getOrderInvoicedStatus();
 
-        if (!empty($createdStatus)) {
-            $statuses['onImport'] = [$createdStatus];
-        }
+        $invoicedStatus = $this->helper->isInvoiceNotificationEnabled()
+            ? $this->helper->getOrderInvoicedStatus()
+            : null;
 
-        if (!empty($invoicedStatus)) {
-            $statuses['onInvoice'] = [$invoicedStatus];
-        }
-
-        if ($statuses) {
-            $oms['orderImportStatuses'] = $statuses;
-        }
+        $oms['orderImportStatuses'] = [
+            'onImport' => !empty($createdStatus) ? [$createdStatus] : null,
+            'onInvoice' => !empty($invoicedStatus) ? [$invoicedStatus] : null
+        ];
 
         return $oms;
     }
