@@ -168,10 +168,16 @@ class JanisAccountService
             ? $this->helper->getOrderInvoicedStatus()
             : null;
 
-        $oms['orderImportStatuses'] = [
-            'onImport' => !empty($createdStatus) ? [$createdStatus] : null,
-            'onInvoice' => !empty($invoicedStatus) ? [$invoicedStatus] : null
-        ];
+        // Only the two statuses are overwritten, on top of whatever the block
+        // already held: Magento owns these two and nothing else inside it.
+        $statuses = isset($currentOms['orderImportStatuses']) && is_array($currentOms['orderImportStatuses'])
+            ? $currentOms['orderImportStatuses']
+            : [];
+
+        $statuses['onImport'] = !empty($createdStatus) ? [$createdStatus] : null;
+        $statuses['onInvoice'] = !empty($invoicedStatus) ? [$invoicedStatus] : null;
+
+        $oms['orderImportStatuses'] = $statuses;
 
         return $oms;
     }
