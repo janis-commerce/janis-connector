@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - The API secret is stored encrypted instead of in clear text in `core_config_data`. A data patch encrypts the ones already saved, so credentials keep working without being re-entered (JHUB-1366)
 - A freshly installed module no longer points at the production endpoints by default (JHUB-1366)
+### Changed
+- The notification crons read only the ids they need and process a capped batch per run, with an index on both notification columns, instead of loading the whole pending backlog into memory every minute (JHUB-1367)
+- `schedule_lifetime` raised to 30 minutes, so a slow run no longer leaves the jobs behind it marked as missed (JHUB-1367)
 
 ## [2.2.1] - 2025-11-24
 ### Fixed
