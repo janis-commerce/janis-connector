@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - The notification crons read only the ids they need and process a capped batch per run, with an index on both notification columns, instead of loading the whole pending backlog into memory every minute (JHUB-1367)
 - `schedule_lifetime` raised to 30 minutes, so a slow run no longer leaves the jobs behind it marked as missed (JHUB-1367)
+- The configuration screen follows the log live, appending only the bytes written since the previous poll, with the newest entries at the bottom (JHUB-1368)
+
+### Changed
+- The log rotates daily and keeps a rolling window of the last 30 days, and both readers walk the file backwards instead of loading it whole, so opening the configuration screen no longer exhausts PHP's memory (JHUB-1368)
 
 ## [2.2.1] - 2025-11-24
 ### Fixed
