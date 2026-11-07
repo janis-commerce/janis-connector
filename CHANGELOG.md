@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- A request timeout on the Janis client, so a slow endpoint cannot hang the cron (JHUB-1365)
+
+### Fixed
+- A non 2xx answer from Janis no longer kills the whole cron run: the notification raises a typed exception the cron catches, so the remaining pending orders of that run are still notified (JHUB-1365)
+- An order is flagged as notified only once Janis confirms with a RequestId, so a 2xx without one is retried on the next run instead of being lost (JHUB-1365)
+- The order history note states what actually happened instead of claiming success on a failure, and no longer dumps the raw response (JHUB-1365)
 
 ## [2.2.1] - 2025-11-24
 ### Fixed
