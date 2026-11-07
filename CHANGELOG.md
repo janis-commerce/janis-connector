@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- The whole Janis account is read and sent back on every configuration save, so the features, behaviours and OMS settings Janis rebuilds from the request are no longer reset by a save coming from Magento (JHUB-1387)
+
+### Fixed
+- The order statuses now travel on every save, including when they are cleared: an emptied status reaches Janis as null instead of leaving the previous one in place, and the invoiced status follows the invoice notification switch (JHUB-1387)
 
 ## [2.2.1] - 2025-11-24
 ### Fixed
