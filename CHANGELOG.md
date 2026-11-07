@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - A non 2xx answer from Janis no longer kills the whole cron run: the notification raises a typed exception the cron catches, so the remaining pending orders of that run are still notified (JHUB-1365)
 - An order is flagged as notified only once Janis confirms with a RequestId, so a 2xx without one is retried on the next run instead of being lost (JHUB-1365)
 - The order history note states what actually happened instead of claiming success on a failure, and no longer dumps the raw response (JHUB-1365)
+### Changed
+- Every configuration getter reads the scope of the store it is called for, so the cron no longer notifies with the credentials of another scope (JHUB-1366)
+
+### Fixed
+- The API secret is stored encrypted instead of in clear text in `core_config_data`. A data patch encrypts the ones already saved, so credentials keep working without being re-entered (JHUB-1366)
+- A freshly installed module no longer points at the production endpoints by default (JHUB-1366)
 
 ## [2.2.1] - 2025-11-24
 ### Fixed
