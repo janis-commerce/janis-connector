@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Every configuration getter reads the scope of the store it is called for, so the cron no longer notifies with the credentials of another scope (JHUB-1366)
+
+### Fixed
+- The API secret is stored encrypted instead of in clear text in `core_config_data`. A data patch encrypts the ones already saved, so credentials keep working without being re-entered (JHUB-1366)
+- A freshly installed module no longer points at the production endpoints by default (JHUB-1366)
 
 ## [2.2.1] - 2025-11-24
 ### Fixed
