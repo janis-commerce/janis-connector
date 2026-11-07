@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - The notification crons read only the ids they need and process a capped batch per run, with an index on both notification columns, instead of loading the whole pending backlog into memory every minute (JHUB-1367)
 - `schedule_lifetime` raised to 30 minutes, so a slow run no longer leaves the jobs behind it marked as missed (JHUB-1367)
 - Every configuration getter reads the scope of the store it is called for, so the cron no longer notifies with the credentials of another scope (JHUB-1366)
+- The whole Janis account is read and sent back on every configuration save, so the features, behaviours and OMS settings Janis rebuilds from the request are no longer reset by a save coming from Magento. The account travels as it comes, with no list of accepted fields to keep in sync: a field added to the account reaches Janis on its own (JHUB-1387)
 
 ### Fixed
 - The API secret is stored encrypted instead of in clear text in `core_config_data`. A data patch encrypts the ones already saved, so credentials keep working without being re-entered (JHUB-1366)
