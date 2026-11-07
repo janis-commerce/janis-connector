@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- The whole Janis account is read and sent back on every configuration save, so the features, behaviours and OMS settings Janis rebuilds from the request are no longer reset by a save coming from Magento (JHUB-1387)
+- The whole Janis account is read and sent back on every configuration save, so the features, behaviours and OMS settings Janis rebuilds from the request are no longer reset by a save coming from Magento. The account travels as it comes, with no list of accepted fields to keep in sync: a field added to the account reaches Janis on its own (JHUB-1387)
 
 ### Fixed
 - The order statuses now travel on every save, including when they are cleared: an emptied status reaches Janis as null instead of leaving the previous one in place, and the invoiced status follows the invoice notification switch (JHUB-1387)

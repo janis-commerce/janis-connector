@@ -23,69 +23,21 @@ use JanisCommerce\JanisConnector\Util\Rest;
 class JanisAccountService
 {
     /**
-     * Account fields Janis accepts as they are. All of them travel on every
-     * save: `server` and `status` because the schema makes them mandatory, and
-     * the rest because the account is sent whole.
+     * Account keys that never travel.
      *
-     * `accessToken` is deliberately out. The schema accepts it and the read
-     * returns it, but it is a credential and Janis keeps the stored one when
+     * Everything else does, including a field added to the account after this
+     * class was written. Janis validates the request against a closed schema
+     * that silently drops every key it does not declare -- at the top level and
+     * inside `behaviors` and `oms` alike -- so forwarding the account whole
+     * costs nothing and keeping a list of accepted fields here would only mean
+     * that each new field is dropped until somebody remembers to add it.
+     *
+     * `accessToken` is the one exception: the read returns it and the schema
+     * accepts it, but it is a credential, and Janis keeps the stored one when
      * the request leaves it out, so there is no reason to move it around.
      */
-    const ACCOUNT_FIELDS = [
-        'name',
-        'server',
-        'status',
-        'linkedAccounts'
-    ];
-
-    /**
-     * Value sent for an account field Janis did not return, so the key travels
-     * anyway instead of being dropped from the request.
-     */
-    const ACCOUNT_FIELD_DEFAULTS = [
-        'linkedAccounts' => []
-    ];
-
-    /**
-     * Flags Janis rebuilds from the request on every save. An absent flag is
-     * persisted as false, which is why all of them always travel.
-     */
-    const ACCOUNT_FEATURES = [
-        'publishCategories',
-        'publishBrands',
-        'publishAttributes',
-        'publishProducts',
-        'publishPrices',
-        'publishStock',
-        'importOrders'
-    ];
-
-    /**
-     * Behaviours Janis accepts. Same reasoning as the features: the ones left
-     * out of the request are persisted as null.
-     */
-    const ACCOUNT_BEHAVIORS = [
-        'publishProductsBehavior',
-        'publishAttributesBehavior',
-        'publishPricesBehavior',
-        'publishProductsScopeBehavior',
-        'publishAttributesScopeBehavior',
-        'publishCategoriesScopeBehavior',
-        'publishBrandsScopeBehavior',
-        'publishRootCategory',
-        'publishBrandCode'
-    ];
-
-    /**
-     * OMS fields Janis accepts inside the account.
-     */
-    const OMS_FIELDS = [
-        'statusToImportOrders',
-        'orderImportStatuses',
-        'orderImportStatusOnInvoice',
-        'customOrderChangesProcessor',
-        'orderChangesProcessor',
-        'storeCode'
+    const NOT_SENT = [
+        'accessToken'
     ];
 
     /**
@@ -164,35 +116,27 @@ class JanisAccountService
     }
 
     /**
-     * Rebuilds the account exactly as Janis expects it, with the Magento
-     * settings applied over the values Janis already holds.
+     * The account as Janis returned it, with the Magento settings written on
+     * top and the keys of NOT_SENT removed.
      *
-     * Only the fields Janis declares are sent: the request is validated
-     * against a closed schema and an unknown key makes the whole save fail.
+     * Nothing else is filtered. The request is validated against a closed
+     * schema that keeps what it declares and discards the rest, so the read
+     * only fields of the account (`dateCreated`, the `import*` flags, the
+     * computed `behaviors.publishStoreViewId`) cost nothing by travelling, and
+     * a field added to the account tomorrow reaches Janis without anyone
+     * having to come back and declare it here.
      *
      * @param array $account Account as Janis returned it
      * @return array
      */
     private function buildPayload(array $account)
     {
-        $payload = ['id' => $account['id']];
+        $payload = array_diff_key($account, array_flip(self::NOT_SENT));
 
-        foreach (self::ACCOUNT_FIELDS as $field) {
-            if (array_key_exists($field, $account)) {
-                $payload[$field] = $account[$field];
-            } elseif (array_key_exists($field, self::ACCOUNT_FIELD_DEFAULTS)) {
-                $payload[$field] = self::ACCOUNT_FIELD_DEFAULTS[$field];
-            }
-        }
-
-        foreach (self::ACCOUNT_FEATURES as $feature) {
-            $payload[$feature] = !empty($account[$feature]);
-        }
-
-        // The block always travels, even empty: Janis rebuilds `behaviors` from
-        // the request, so leaving it out is not "do not touch it", it is "reset
-        // it". The same goes for `oms`.
-        $payload['behaviors'] = $this->pick($account['behaviors'] ?? [], self::ACCOUNT_BEHAVIORS);
+        // Both blocks travel even when the account has none, because Janis
+        // rebuilds them from the request: leaving one out is not "do not touch
+        // it", it is "reset it".
+        $payload['behaviors'] = $account['behaviors'] ?? [];
 
         $payload['oms'] = $this->buildOms($account['oms'] ?? []);
 
@@ -216,7 +160,7 @@ class JanisAccountService
      */
     private function buildOms(array $currentOms)
     {
-        $oms = $this->pick($currentOms, self::OMS_FIELDS);
+        $oms = $currentOms;
 
         $createdStatus = $this->helper->getOrderCreatedStatus();
 
@@ -263,21 +207,4 @@ class JanisAccountService
         return $response;
     }
 
-    /**
-     * @param array $source
-     * @param string[] $keys
-     * @return array
-     */
-    private function pick(array $source, array $keys)
-    {
-        $picked = [];
-
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $source)) {
-                $picked[$key] = $source[$key];
-            }
-        }
-
-        return $picked;
-    }
 }
