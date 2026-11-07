@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- The configuration screen follows the log live, appending only the bytes written since the previous poll, with the newest entries at the bottom (JHUB-1368)
+
+### Changed
+- The log rotates daily and keeps a rolling window of the last 30 days, and both readers walk the file backwards instead of loading it whole, so opening the configuration screen no longer exhausts PHP's memory (JHUB-1368)
 
 ## [2.2.1] - 2025-11-24
 ### Fixed
